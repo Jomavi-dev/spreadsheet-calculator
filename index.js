@@ -2,8 +2,8 @@
 const express = require('express')
 const cookieParser = require('cookie-parser')
 require('dotenv').config()
-require('./db/mongoose')
-const models = require('./models')
+require('./src/db/mongoose')
+const models = require('./src/models')
 
 const app = express()
 const port = process.env.PORT
@@ -27,7 +27,7 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }))
 
 const {
   usersRouter
-} = require('./routes')
+} = require('./src/routes')
 
 
 app.post('/api/upload', (req, res, next) => {
