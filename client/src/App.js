@@ -3,18 +3,6 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import { Navbar, Import, Login } from './components'
 import { PrivateRoute, PublicRoute } from './hocs'
 
-function Test() {
-  return (
-    <div class="p-6 mt-10 max-w-sm mx-auto bg-white rounded-xl shadow-md flex items-center space-x-4">
-      <div class="flex-shrink-0"><img class="h-12 w-12" src="/img/logo.svg" alt="" /></div>
-      <div>
-        <div class="text-xl font-medium text-black">ChitChat</div>
-        <p class="text-gray-500">You have a new message!</p>
-      </div>
-    </div>
-  )
-}
-
 function App() {
   return (
     <Router>
@@ -22,8 +10,7 @@ function App() {
       <Switch>
         <Route path='/' exact component={Import} />
         <PublicRoute path='/login' component={Login} />
-        <PublicRoute path='/register' component={Test} />
-        <PrivateRoute path='/todos' component={Test} roles={['user', 'admin']} />
+        <PrivateRoute path='/todos' component={Login} roles={['user', 'admin']} />
       </Switch>
     </Router>
   )
