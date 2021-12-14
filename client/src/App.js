@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 
-import { Navbar, Upload } from './components'
+import { Navbar, Import, Login } from './components'
 import { PrivateRoute, PublicRoute } from './hocs'
 
 function Test() {
@@ -20,11 +20,10 @@ function App() {
     <Router>
       <Navbar />
       <Switch>
-        <Route path='/' exact component={Upload} />
-        <PublicRoute path='/login' component={Test} />
+        <Route path='/' exact component={Import} />
+        <PublicRoute path='/login' component={Login} />
         <PublicRoute path='/register' component={Test} />
         <PrivateRoute path='/todos' component={Test} roles={['user', 'admin']} />
-        <PrivateRoute path='/admin' component={Test} roles={['admin']} />
       </Switch>
     </Router>
   )

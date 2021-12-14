@@ -6,11 +6,11 @@ require('./db/mongoose')
 const models = require('./models')
 
 const app = express()
-const port = process.env.PORT
+const port = process.env.PORT || 5000
 
 // Expose collections to request handlers
 app.use((req, res, next) => {
-  if (!models.User)
+  if (!models.User || !models.Results)
     return next(new Error('No models.'))
   req.models = models;
   return next();
@@ -22,8 +22,8 @@ app.set('json spaces', 2)
 
 // Express.js middleware configuration
 app.use(cookieParser())
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
+app.use(express.json({ limit: '50mb' }))
+app.use(express.urlencoded({ limit: '50mb', extended: true }))
 
 const {
   usersRouter
@@ -32,7 +32,24 @@ const {
 
 app.post('/api/upload', (req, res) => {
   try {
-    res.json({ data: req.body })
+    const data = req.body
+    console.log(data)
+    data.forEach(dt => req.models.Results.insertMany(dt, function (err, doc) {
+      if (err) next(err)
+      console.log(doc)
+    }))
+  } catch (error) {
+    console.error(error)
+  }
+})
+
+app.get('/api/results', (req, res) => {
+  try {
+    req.models.Results.find({}, null, { sort: { _id: -1 } }, (error, results) => {
+      if (error) return next(error)
+      if (!results) return next(new Error('No results found.'))
+      res.status(200).json(results)
+    })
   } catch (error) {
     console.error(error)
   }
