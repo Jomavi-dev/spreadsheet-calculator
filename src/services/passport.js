@@ -13,7 +13,7 @@ const cookieExtractor = req => {
 // authorization
 passport.use(new JWTStrategy({
   jwtFromRequest: cookieExtractor,
-  secretOrKey: process.env.JWT_SECRET_KEY || 'MaviRoxks'
+  secretOrKey: process.env.JWT_SECRET_KEY
 }, (jwt_payload, done) => {
   User.findById({ _id: jwt_payload.sub }, (err, user) => {
     if (err) return done(err, false)

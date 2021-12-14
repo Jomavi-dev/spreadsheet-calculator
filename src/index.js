@@ -6,7 +6,7 @@ require('./db/mongoose')
 const models = require('./models')
 
 const app = express()
-const port = process.env.PORT || 5000
+const port = process.env.PORT
 
 // Expose collections to request handlers
 app.use((req, res, next) => {
@@ -30,7 +30,7 @@ const {
 } = require('./routes')
 
 
-app.post('/api/upload', (req, res) => {
+app.post('/api/upload', (req, res, next) => {
   try {
     const data = req.body
     console.log(data)

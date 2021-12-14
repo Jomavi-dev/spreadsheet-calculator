@@ -4,7 +4,7 @@ import * as xlsx from 'xlsx';
 const Import = () => {
   const [dragging, setDragging] = useState(false)
   const [selectedFiles, setSelectedFiles] = useState([])
-  const [filez, setFilez] = useState([])
+  const [data, setData] = useState([])
   const [cols, setCols] = useState([])
 
   useEffect(() => {
@@ -58,18 +58,18 @@ const Import = () => {
     e.preventDefault()
     if (!selectedFiles) return
 
-    console.log('files submitted >>>', filez)
+    console.log('files submitted >>>', data)
     const res = await fetch('/api/upload', {
-      method: "post",
-      body: JSON.stringify(filez),
+      method: "POST",
+      body: JSON.stringify(data),
       headers: {
         'Content-Type': 'application/json'
       }
     })
-    const data = await res.json()
-    console.log('Response >>>', data)
+    const dataRes = await res.json()
+    console.log('Response >>>', dataRes)
     setSelectedFiles([])
-    setFilez([])
+    setData([])
   }
 
   const upload = (e, file) => {
@@ -90,14 +90,14 @@ const Import = () => {
           const ws = wb.Sheets[wsName];
           const parsedData = xlsx.utils.sheet_to_json(ws, { raw: false })
           let parsedData2 = xlsx.utils.sheet_to_json(ws, { header: 1 })
-          setFilez(prevFilez => ([...prevFilez, parsedData]))
+          setData(prevFilez => ([...prevFilez, parsedData]))
           setCols(parsedData2[0])
         };
         reader.readAsBinaryString(file)
-      } else { alert('This browser does not support HTML5!') }
+      } else { alert('This browser does not support HTML5 !') }
     }
     // else if (file.type.startsWith('image/')) {}
-    else { alert('Only .xlsx and .csv files allowed!') }
+    else { alert('Only .xlsx and .csv files allowed !') }
   }
 
   console.log('selectedFiles >>', selectedFiles)
@@ -136,7 +136,7 @@ const Import = () => {
           })}
         </ul>
 
-        {filez && (
+        {data && (
           <table className="table-auto border-collapse">
             <thead className="bg-gray-50">
               <tr>
@@ -153,7 +153,7 @@ const Import = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filez && filez.map(rows => rows.map(row => {
+              {data && data.map(rows => rows.map(row => {
                 return <tr key={row.name}>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <a href="!#" className="text-indigo-600 hover:text-indigo-900">
