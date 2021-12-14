@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 mongoose.Promise = global.Promise
 
-const uri = process.env.MONGO_URI
+const uri = process.env.MONGO_URI || 'mongodb://localhost:27017/sprsheetDB'
 mongoose.connect(uri, { useNewUrlParser: true }, (err) => {
   if (err) console.error('Error with MongoDB connection:', err)
   else console.log('MongoDB connection established successfully')
