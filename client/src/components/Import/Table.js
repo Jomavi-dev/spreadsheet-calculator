@@ -89,3 +89,42 @@ export default function Example() {
     </div>
   )
 }
+
+
+// {data && (
+//   <table className="table-auto border-collapse">
+//     <thead className="bg-gray-50">
+//       <tr>
+//         <th scope="col" className="relative px-6 py-3">
+//           <span className="sr-only">Edit</span>
+//         </th>
+//         {cols.map(col => {
+//           return <th
+//             scope="col"
+//           >
+//             {col}
+//           </th>
+//         })}
+//       </tr>
+//     </thead>
+//     <tbody className="bg-white divide-y divide-gray-200">
+//       {data && data.map(rows => rows.map(row => {
+//         return <tr key={row.name}>
+//           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+//             <a href="!#" className="text-indigo-600 hover:text-indigo-900">
+//               Edit
+//             </a>
+//           </td>
+//           <td>{row.name}</td>
+//           <td>{row.score}</td>
+//           <td>{row.date}</td>
+//           <td>
+//             <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${row.paidFees === 'TRUE' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+//               {row.paidFees === 'TRUE' ? 'Paid' : 'Not Paid'}
+//             </span>
+//           </td>
+//         </tr>
+//       }))}
+//     </tbody>
+//   </table>
+// )}
