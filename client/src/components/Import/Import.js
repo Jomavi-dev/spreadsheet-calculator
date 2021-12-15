@@ -59,7 +59,7 @@ const Import = () => {
     if (!selectedFiles) return
 
     console.log('files submitted >>>', data)
-    const res = await fetch('/api/upload', {
+    const res = await fetch('/results', {
       method: "POST",
       body: JSON.stringify(data),
       headers: {

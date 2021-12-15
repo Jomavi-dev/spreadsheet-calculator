@@ -26,36 +26,12 @@ app.use(express.json({ limit: '50mb' }))
 app.use(express.urlencoded({ limit: '50mb', extended: true }))
 
 const {
-  usersRouter
+  usersRouter,
+  resultsRouter
 } = require('./src/routes')
 
-
-app.post('/api/upload', (req, res, next) => {
-  try {
-    const data = req.body
-    console.log(data)
-    data.forEach(dt => req.models.Results.insertMany(dt, function (err, doc) {
-      if (err) next(err)
-      console.log(doc)
-    }))
-  } catch (error) {
-    console.error(error)
-  }
-})
-
-app.get('/api/results', (req, res) => {
-  try {
-    req.models.Results.find({}, null, { sort: { _id: -1 } }, (error, results) => {
-      if (error) return next(error)
-      if (!results) return next(new Error('No results found.'))
-      res.status(200).json(results)
-    })
-  } catch (error) {
-    console.error(error)
-  }
-})
-
 app.use('/users', usersRouter)
+app.use('/results', resultsRouter)
 
 // Error handlers
 // Development error handler: Will print stacktrace

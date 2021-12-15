@@ -77,7 +77,7 @@ const Upload = () => {
       const newData = media.map((med) => {
         let formData = new FormData()
         formData.append('file', med.file)
-        axios.post('/api/upload', formData, {
+        axios.post('/results', formData, {
           onUploadProgress: (e) => {
             med.progress = Math.round(e.loaded * 100 / e.total)
           },
@@ -89,7 +89,7 @@ const Upload = () => {
       submitRef.current.click()
 
 
-      // const res = await fetch('/api/upload', {
+      // const res = await fetch('/results', {
       //   method: "post",
       //   body: JSON.stringify(selectedFiles),
       //   headers: {

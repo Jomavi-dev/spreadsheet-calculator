@@ -1,3 +1,4 @@
 module.exports = {
-  usersRouter: require('./user')
+  usersRouter: require('./user'),
+  resultsRouter: require('./result')
 }
