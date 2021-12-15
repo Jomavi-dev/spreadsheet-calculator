@@ -29,10 +29,6 @@ const {
   usersRouter
 } = require('./src/routes')
 
-app.get('/', (req, res) => {
-  res.json({ msg: 'Hi' })
-})
-
 
 app.post('/api/upload', (req, res, next) => {
   try {
