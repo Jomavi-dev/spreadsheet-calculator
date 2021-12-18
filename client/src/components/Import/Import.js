@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react'
+import axios from 'axios'
 import * as xlsx from 'xlsx';
+import { XIcon } from '@heroicons/react/outline'
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Import = () => {
   const [dragging, setDragging] = useState(false)
   const [selectedFiles, setSelectedFiles] = useState([])
-  const [data, setData] = useState([])
-  const [cols, setCols] = useState([])
+  const [submitDisabled, setSubmitDisabled] = useState(true)
 
   useEffect(() => {
     const offBrowserDefaults = (e) => {
@@ -54,22 +57,43 @@ const Import = () => {
     return src
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    if (!selectedFiles) return
+  const handleSubmit = (e) => {
+    try {
+      e.preventDefault()
+      if (!selectedFiles) return
 
-    console.log('files submitted >>>', data)
-    const res = await fetch('/results', {
-      method: "POST",
-      body: JSON.stringify(data),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    const dataRes = await res.json()
-    console.log('Response >>>', dataRes)
-    setSelectedFiles([])
-    setData([])
+      selectedFiles
+        .filter(f => !f.uploaded)
+        .forEach(async (f) => {
+          const res = await axios.post('/results', f.data, {
+            onUploadProgress: (e) => {
+              let prg = Math.round(e.loaded * 100 / e.total)
+              setSelectedFiles(prevState => {
+                const updatedFile = prevState.map((f) => {
+                  if (f.data) {
+                    f.progress = prg
+                    f.uploaded = true
+                  }
+                  return f
+                })
+                return (updatedFile)
+              })
+            }
+          })
+          console.log(res)
+          if (res.status === 200) toast.success(JSON.stringify(res.data.msg))
+        })
+    } catch (error) {
+      toast.error(error, { autoClose: false })
+    }
+    finally {
+      setSubmitDisabled(true)
+      // setSelectedFiles([])
+    }
+  }
+
+  const handleDelete = (id) => {
+    setSelectedFiles(selectedFiles.filter(file => file.id !== id))
   }
 
   const upload = (e, file) => {
@@ -79,20 +103,34 @@ const Import = () => {
           id: prevFiles.length + 1,
           file,
           src: preview(file),
-          progress: 100
+          progress: 0
         }]))
-
+        setSubmitDisabled(false)
         var reader = new FileReader();
         reader.onload = function (e) {
-          var data = e.target.result;
+          let data = e.target.result;
           let wb = xlsx.read(data, { type: 'binary', dateNF: 'mm/dd/yyyy' });
           const wsName = wb.SheetNames[0];
           const ws = wb.Sheets[wsName];
-          const parsedData = xlsx.utils.sheet_to_json(ws, { raw: false })
-          let parsedData2 = xlsx.utils.sheet_to_json(ws, { header: 1 })
-          setData(prevFilez => ([...prevFilez, parsedData]))
-          setCols(parsedData2[0])
-        };
+          const rawData = xlsx.utils.sheet_to_json(ws, { raw: false })
+          // let parsedData2 = xlsx.utils.sheet_to_json(ws, { header: 1 })
+          const parsedData = rawData.map(data => {
+            if (data.paid === 'TRUE') data.paid = true
+            if (data.paid === 'FALSE') data.paid = false
+            return data
+          })
+          // setData(prevFilez => ([...prevFilez, parsedData]))
+
+          setSelectedFiles(prevState => {
+            const updatedFile = prevState.map((f) => {
+              if (f.file === file) {
+                f.data = parsedData
+              }
+              return f
+            })
+            return (updatedFile)
+          })
+        }
         reader.readAsBinaryString(file)
       } else { alert('This browser does not support HTML5 !') }
     }
@@ -100,9 +138,8 @@ const Import = () => {
     else { alert('Only .xlsx and .csv files allowed !') }
   }
 
-  console.log('selectedFiles >>', selectedFiles)
   return (
-    <div className={`py-12 px-3 md:px-0`}>
+    <div className="py-12 px-3 md:px-0">
       <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div id="drop zone" className={`flex flex-col px-6 py-12 items-center border-2 border-dashed border-gray-400 rounded-md  ${dragging ? ' border-indigo-500 bg-gray-100' : ' border-gray-400'}`}
           onDragOver={() => setDragging(true)}
@@ -118,16 +155,19 @@ const Import = () => {
             </label>
             <p className="text-xs text-gray-600 mt-4">.XLSX and .CSV files only</p>
             <p className="text-xs text-gray-600 mt-1">Maximum upload file size: 50MB</p>
-            <button type="submit" className="bg-green-400 px-4 h-9 mt-4 inline-flex items-center rounded cursor-pointer border border-gray-300 text-sm font-medium text-white focus-within:ring-2 focus-within:ring-green-300 focus-within:ring-offset-2 ">Submit</button>
+            <button type="submit" className="bg-green-400 px-4 h-9 mt-4 inline-flex items-center rounded cursor-pointer border border-gray-300 text-sm font-medium text-white shadow-sm focus-within:ring-2 focus-within:ring-green-300 focus-within:ring-offset-2" disabled={submitDisabled}>Submit</button>
           </form>
         </div>
 
         <ul className="my-6 bg-white rounded divide-y divide-gray-200 shadow">
           {selectedFiles && selectedFiles.reverse().map(({ id, progress, file: { name } }) => {
             return (
-              <li key={id} className="p-3 flex items-center">
-                <div className="text-sm text-gray-600 max-w-xs">{name}</div>
-                <div className="ml-auto w-40 bg-gray-200 rounded-full h-5 shadow-inner overflow-hidden relative flex items-center justify-center">
+              <li key={id} className="px-3 py-1 flex items-center">
+                <div className="text-xs text-gray-600 max-w-xs">{name}</div>
+                <div className='ml-auto cursor-pointer rounded-full p-3 text-red-300 hover:bg-gray-100 hover:text-black' onClick={(e) => handleDelete(id)}>
+                  <XIcon className={!progress ? 'block h-5 w-5' : 'hidden'} aria-hidden="true" />
+                </div>
+                <div className={progress ? 'ml-auto w-40 bg-gray-200 rounded-full h-4 shadow-inner overflow-hidden relative flex items-center justify-center' : 'hidden'}>
                   <div className="inline-block h-full bg-indigo-600 absolute top-0 left-0" style={{ width: `${progress}%` }}></div>
                   <div className="relative z-10 text-xs font-semibold text-center text-white drop-shadow text-shadow">{progress}%</div>
                 </div>
@@ -136,7 +176,7 @@ const Import = () => {
           })}
         </ul>
       </div>
-    </div >
+    </div>
   )
 }
 

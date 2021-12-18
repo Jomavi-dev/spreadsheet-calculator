@@ -31,7 +31,7 @@ router.route('/')
   .post(createResult)
 
 router.route('/:id')
-  // .all(jwtAuth)
+  .all(jwtAuth)
   .get(getResult)
   .delete(deleteResult)
   .patch(updateResult)

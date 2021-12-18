@@ -1,4 +1,4 @@
-exports.getResults = (req, res) => {
+exports.getResults = (req, res, next) => {
   try {
     req.models.Results.find({}, null, { sort: { _id: -1 } }, (error, results) => {
       if (error) return next(error)
@@ -6,23 +6,23 @@ exports.getResults = (req, res) => {
       res.status(200).json(results)
     })
   } catch (error) {
-    console.error(error)
     return next(error)
   }
 }
 
-exports.createResult = (req, res) => {
+exports.createResult = (req, res, next) => {
   try {
     const data = req.body
-    data.forEach(dt => req.models.Results.insertMany(dt, function (err, doc) {
-      if (err) next(err)
-      console.log(doc)
-    }))
+    req.models.Results.insertMany(data, function (err, doc) {
+      if (err) return next(err)
+      return res.status(200).json({ msg: 'Added succesfully', doc })
+    })
   } catch (error) {
-    console.error(error)
-    next(err)
+    next(error)
+    res
+      .status(err.status || 500)
+      .json({ message: { msgBody: 'Error occured:' + err.message, msgError: true } })
   }
-
 
 
   // const {
@@ -54,7 +54,7 @@ exports.createResult = (req, res) => {
   // })
 }
 
-exports.getResult = (req, res) => {
+exports.getResult = (req, res, next) => {
   const { id } = req.params
   req.models.Service.findById(id)
     .then(service => res.json(service))
@@ -68,7 +68,7 @@ exports.deleteResult = (req, res) => {
     .catch(err => next(err))
 }
 
-exports.updateResult = (req, res) => {
+exports.updateResult = (req, res, next) => {
   const { id } = req.params
   req.models.Service.findById(id)
     .then(service => {

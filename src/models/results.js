@@ -9,7 +9,7 @@ const resultSchema = new Schema({
     required: [true, "You have to specify a name property"]
   },
   score: { type: Number, default: 0 },
-  date: { type: Date },
+  date: { type: Date, default: Date.now() },
   paid: { type: Boolean, default: false },
   _createdBy: { type: ObjectId }
 }, { timestamps: true })

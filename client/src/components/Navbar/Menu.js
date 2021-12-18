@@ -1,13 +1,13 @@
-import { Fragment } from 'react'
+import { Fragment, useState, useEffect } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { BellIcon, MenuIcon, XIcon } from '@heroicons/react/outline'
-import { NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom"
 
 const navigation = [
-  { name: 'Dashboard', href: '/', current: true },
-  { name: 'Verify', href: '/', current: false },
-  { name: 'Course', href: '/', current: false },
-  { name: 'Student', href: '/', current: false }
+  { name: 'Dashboard', href: '/' },
+  { name: 'Exports', href: '/exports' },
+  { name: 'Courses', href: '/courses' },
+  { name: 'Student', href: '/student' }
 ]
 
 function classNames(...classes) {
@@ -15,6 +15,15 @@ function classNames(...classes) {
 }
 
 export default function Nav() {
+  const [page, setPage] = useState()
+
+  useEffect(() => {
+    const path = window.location.pathname
+    const matchingPath = navigation.filter(item => item.href === path)
+    setPage(matchingPath[0].name)
+  }, [])
+
+
   return (
     <Disclosure as="nav" className="bg-gray-800">
       {({ open }) => (
@@ -44,6 +53,7 @@ export default function Nav() {
                     src="https://tailwindui.com/img/logos/workflow-logo-indigo-500-mark-white-text.svg"
                     alt="Workflow"
                   />
+                  {/* <p className="text-white mx-2 text-2xl font-semibold uppercase">gpac</p> */}
                 </div>
                 <div className="hidden sm:block sm:ml-6">
                   <div className="flex space-x-4">
@@ -51,8 +61,9 @@ export default function Nav() {
                       <NavLink
                         key={item.name}
                         to={item.href}
+                        onClick={() => setPage(item.name)}
                         className={classNames(
-                          item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                          page === item.name ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
                           'px-3 py-2 rounded-md text-sm font-medium'
                         )}
                         aria-current={item.current ? 'page' : undefined}
@@ -96,7 +107,7 @@ export default function Nav() {
                     <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
                       <Menu.Item>
                         {({ active }) => (
-                          <NavLink to="/" className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                          <NavLink to="/profile" className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
                           >
                             Your Profile
                           </NavLink>
@@ -105,7 +116,7 @@ export default function Nav() {
                       <Menu.Item>
                         {({ active }) => (
                           <NavLink
-                            to="/"
+                            to="/settings"
                             className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
                           >
                             Settings
@@ -115,7 +126,7 @@ export default function Nav() {
                       <Menu.Item>
                         {({ active }) => (
                           <NavLink
-                            to="/"
+                            to="/sign-out"
                             className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
                           >
                             Sign out
@@ -136,8 +147,9 @@ export default function Nav() {
                   key={item.name}
                   as="a"
                   href={item.href}
+                  onClick={() => setPage(item.name)}
                   className={classNames(
-                    item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                    page === item.name ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
                     'block px-3 py-2 rounded-md text-base font-medium'
                   )}
                   aria-current={item.current ? 'page' : undefined}

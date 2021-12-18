@@ -18,11 +18,11 @@ const AuthProvider = ({ children }) => {
   }, [])
 
   return (
-    <div>
+    <>
       {
         !isLoaded
           ? (
-            <h2 style={{ display: 'flex', justifyContent: "center", alignItems: "center" }}>Loading</h2>
+            <h2 className="text-center mt-32 text-3xl font-semi-bold leading-loose text-gray-600 sm:text-4xl">Loading...</h2>
           ) : (
             <AuthContext.Provider value={{
               user,
@@ -34,7 +34,7 @@ const AuthProvider = ({ children }) => {
             </AuthContext.Provider>
           )
       }
-    </div >
+    </>
   )
 }
 
