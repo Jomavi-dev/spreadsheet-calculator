@@ -1,8 +1,7 @@
 const mongoose = require('mongoose')
 mongoose.Promise = global.Promise
 
-// process.env.MONGO_URI ||
-const uri =
+const uri = process.env.MONGO_URI
 mongoose.connect(uri, { useNewUrlParser: true }, (err) => {
   if (err) console.error('Error with MongoDB connection:', err)
   else console.log('MongoDB connection established successfully')
